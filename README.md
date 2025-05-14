@@ -1,1 +1,1 @@
-# cs50_problems
+Problems that I submitted to [CS50 course](https://cs50.harvard.edu/x/2025/).
