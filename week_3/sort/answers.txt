@@ -1,0 +1,35 @@
+sort1 uses: bubble sort
+
+How do you know?:
+sort1 sorted random5000 in ~ 0.05 s, the slowest one
+             random10000 in ~ 0.19 s
+             random50000 in ~ 9.6 s
+             reversed5000 in ~ 0.06 s
+             reversed10000 in ~ 0.21 s
+             reversed50000 in ~ 6.6 s
+             sorted5000 in ~ 0.02 s
+             sorted10000 in ~ 0.04, much quicker then unsorted
+sorted array were much faster, so it should be bubble sort
+
+sort2 uses: merge sort
+
+How do you know?:
+sort2 sorted random5000 in ~ 0.01 s, it's the quickest one
+             random10000 in ~ 0.03 s
+             reversed5000 in  ~ 0.01 s
+             reversed10000 in ~ 0.04 s
+             sorted5000 in ~ 0.02 s no difference with unsorted
+the growth of time consumed is the slowest, probably n*logn
+
+sort3 uses: selection sort
+
+How do you know?:
+sort3 sorted random5000 in ~ 0.04 s
+             random10000 in ~ 0.13 s
+             random50000 in ~ 0.54 s
+             reversed5000 in ~ 0.04 s
+             reversed10000 in ~ 0.13 s
+             reversed50000 in ~ 0.42 s
+             sorted5000 in ~ 0.03 s
+             sorted10000 in ~ 0.12 s
+no significant difference in sorting sorted arrays vs unsorted
