@@ -1,0 +1,10 @@
+Energy, valence, danceability:
+Averages are 0.65906     | 0.484443     | 0.71646
+Minimums are 0.296       | 0.0796       | 0.258
+Maximums are 0.909       | 0.931        | 0.964
+
+It looks like the users 'aura' is a little more energetic than calm, and pretty much danceable.
+But it looks like the user enjoys both the songs with positive and negative emotions in it, because of valence values.
+
+The 'aura' formula might be not very representative. It will be probably more useful to determine specific clusters
+or groups of compositions that have something in common and leverage their relationship in the user's personal taste.
