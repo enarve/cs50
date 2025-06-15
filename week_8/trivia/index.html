@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="styles.css" rel="stylesheet">
+        <title>Trivia!</title>
+        <script>
+            // TODO: Add code to check answers to questions
+            document.addEventListener("DOMContentLoaded", function(){
+                for (const button of document.querySelectorAll(".q1")) {
+                    button.addEventListener("click", function() {
+                        // Reset all buttons to default background color
+                        for (const button of document.querySelectorAll(".q1")) {
+                            button.style.backgroundColor = "#d9edff";
+                        }
+                        // Show message and paint the clicked button
+                        let answer = document.querySelector(".message1")
+                        if (button.innerHTML == "JavaScript") {
+                            button.style.backgroundColor = "green";
+                            answer.innerHTML = "Correct!";
+                        } else {
+                            button.style.backgroundColor = "red";
+                            answer.innerHTML = "Incorrect";
+                        }
+                    })
+                }
+
+                document.querySelector(".q2").addEventListener("click", function() {
+                    let textField = document.querySelector("#q2")
+                    let answer = document.querySelector(".message2")
+                    if (textField.value.toUpperCase() == "C") {
+                        textField.style.backgroundColor = "green";
+                        answer.innerHTML = "Correct!";
+                    } else {
+                        textField.style.backgroundColor = "red";
+                        answer.innerHTML = "Incorrect";
+                    }
+                })
+            });
+        </script>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Trivia!</h1>
+        </div>
+
+        <div class="container">
+            <div class="section">
+                <h2>Part 1: Multiple Choice </h2>
+                <hr>
+                <!-- TODO: Add multiple choice question here -->
+                <h3>What programming language is used to run in the browser environment?</h3>
+                <div>
+                    <button class="q1">Python</button>
+                    <button class="q1">C</button>
+                    <button class="q1">JavaScript</button>
+                    <button class="q1">Rust</button>
+                </div>
+                <div>
+                    <p class="message1">
+
+                    </p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Part 2: Free Response</h2>
+                <hr>
+                <!-- TODO: Add free response question here -->
+                 <h3>What is the language among those that were taught in CS50, that deals with manual memory allocation?</h3>
+                 <div>
+                    <input type="text" id="q2">
+                    <button class="q2">Check answer</button>
+                 </div>
+                 <div>
+                    <p class="message2">
+
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
