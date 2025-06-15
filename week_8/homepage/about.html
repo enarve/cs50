@@ -9,40 +9,52 @@
     </head>
     <body>
         <header>
-        <p>Nikita's Homepage</p>
-        <nav>
-        <ul>
-            <li>
-                <a href="index.html">
-                    Main
-                </a>
-            </li>
-            <li>
-                About
-            </li>
-            <li>
-                <a href = "gallery.html">
-                    Gallery
-                </a>
-            </li>
-            <li>
-                <a href = "contacts.html">
-                    Contacts
-                </a>
-            </li>
-        </ul>
+
+        <nav class="navbar navbar-expand-lg bg-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="index.html">Nikita's Homepage</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link">
+                        Main
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="about.html" class="nav-link disabled">
+                            About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href = "gallery.html" class="nav-link">
+                            Gallery
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href = "contacts.html" class="nav-link">
+                            Contacts
+                        </a>
+                    </li>
+                </ul>
+                </div>
+            </div>
         </nav>
 
         </header>
-
+        <div class="container py-4">
         <main>
-            <h1>About</h1>
-            <p>Hi, I am Nikita, I am currently working through CS50 course.</p>
-            <p>This website was made for the <a href="https://cs50.harvard.edu/x/2025/psets/8/homepage/">Homepage problem</a> of the week 8.</p>
+            <h1 class="display-5 fw-bold">About</h1>
+            <p class="col-md-8 fs-4">Hi, I am <span class="stylized">Nikita</span>, I am currently working through <span class="stylized">CS50</span> course.</p>
+            <p class="col-md-8 fs-4">This website was made for the <a href="https://cs50.harvard.edu/x/2025/psets/8/homepage/">Homepage problem</a> of the week 8.</p>
+            <p class="col-md-8 fs-4">Thanks to  <a href="https://confettijs.org/">Confetti.js</a> for a nice effect that I used on the main page.</p>
         </main>
 
-        <footer>
-            &#169; Nikita, 2025
+        <footer class="pt-3 mt-4 text-muted border-top">
+            &#169; Nikita, <script>document.write(new Date().getFullYear())</script>
         </footer>
+        </div>
     </body>
 </html>

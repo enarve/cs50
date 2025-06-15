@@ -1,0 +1,19 @@
+body {
+    background-color: #f5eedf;
+}
+
+a {
+    color: green;
+}
+
+.stylized {
+    font-style: italic;
+}
+
+footer {
+    font-size: 0.9rem;
+}
+
+.custom-rounded {
+    border-radius: 25px;
+}

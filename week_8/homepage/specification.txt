@@ -1,0 +1,4 @@
+HTML tags: header, p, nav, ul, li, a, main, h1, footer, script, link, section, img
+CSS properties: background-color, color, font-style, font-size, border-radius
+I use various Bootstrap classes to style the site and JavaScript to get current year for copyright in the footer,
+I also added confetti effect script made by someone on the web (https://confettijs.org/).
