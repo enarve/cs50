@@ -31,25 +31,95 @@ def after_request(response):
     return response
 
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    user_id = session["user_id"]
+    if request.method == "POST":
+        cash = float(request.form.get("cash"))
+        if not cash:
+            return apology("Can not add empty value")
+        if cash <= 0:
+            return apology("Amount must be positive")
+
+        old_cash = db.execute("SELECT cash FROM users WHERE id = ?;", user_id)[0].get("cash")
+        db.execute("UPDATE users SET cash = ? WHERE id = ?;", old_cash + cash, user_id)
+        return redirect("/")
+
+    else:
+        user_id = session["user_id"]
+        userinfo = db.execute("SELECT * FROM users WHERE id = ?", user_id)[0]
+        db.execute("CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id INTEGER NOT NULL, symbol TEXT NOT NULL, shares INTEGER NOT NULL, price NUMERIC NOT NULL, timestamp TEXT DEFAULT CURRENT_TIMESTAMP);")
+        stocks = db.execute(
+            "SELECT DISTINCT symbol, SUM(shares) AS shares FROM transactions WHERE (user_id) = (?) GROUP BY symbol;", user_id)
+        print(stocks)
+        value = 0
+        for stock in stocks:
+            symbol = stock.get("symbol")
+            shares = stock.get("shares")
+            price = lookup(symbol).get("price")
+            value += shares * price
+            stock["price"] = price
+            stocks = filter(lambda x: x.get("shares") > 0, stocks)
+        return render_template("index.html", userinfo=userinfo, stocks=stocks, value=value)
 
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
 def buy():
     """Buy shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        symbol = request.form.get("symbol")
+        if not symbol:
+            return apology("No symbol provided")
+        info = lookup(symbol)
+        if not info:
+            return apology("Symbol not found")
+        try:
+            shares = float(request.form.get("shares"))
+        except:
+            return apology("Shares is not a number")
+        if int(shares) != shares or shares < 1:
+            return apology("You can buy only positive integer amount of shares")
+        shares = int(shares)
+        price = info.get("price")
+        user_id = session.get("user_id")
+        cash = db.execute("SELECT cash FROM users WHERE id = ?;", user_id)[0].get("cash")
+        total = price * shares
+
+        if cash >= price:
+            db.execute("CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id INTEGER NOT NULL, symbol TEXT NOT NULL, shares INTEGER NOT NULL, price NUMERIC NOT NULL, timestamp TEXT DEFAULT CURRENT_TIMESTAMP);")
+            db.execute("INSERT INTO transactions (user_id, symbol, shares, price) VALUES (?, ?, ?, ?);",
+                       user_id, symbol, shares, price)
+            db.execute("UPDATE users SET cash = ? WHERE id = ?;", cash - total, user_id)
+        else:
+            return apology("Not enough money to buy :(")
+        return redirect("/")
+
+    else:
+        return render_template("buy.html")
 
 
 @app.route("/history")
 @login_required
 def history():
     """Show history of transactions"""
-    return apology("TODO")
+
+    user_id = session["user_id"]
+    userinfo = db.execute("SELECT * FROM users WHERE id = ?", user_id)[0]
+    db.execute("CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id INTEGER NOT NULL, symbol TEXT NOT NULL, shares INTEGER NOT NULL, price NUMERIC NOT NULL, timestamp TEXT DEFAULT CURRENT_TIMESTAMP);")
+    transactions = db.execute(
+        "SELECT DISTINCT symbol, shares, price, timestamp FROM transactions WHERE (user_id) = (?) ORDER BY timestamp;", user_id)
+    for trn in transactions:
+        symbol = trn.get("symbol")
+        shares = trn.get("shares")
+        if shares > 0:
+            trn["operation"] = "buy"
+        else:
+            trn["operation"] = "sell"
+            trn["shares"] *= -1
+    return render_template("history.html", userinfo=userinfo, transactions=transactions)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -106,17 +176,83 @@ def logout():
 @login_required
 def quote():
     """Get stock quote."""
-    return apology("TODO")
+    if request.method == "POST":
+        symbol = request.form.get("symbol")
+        if not symbol:
+            return apology("No symbol provided")
+        info = lookup(symbol)
+        if info:
+            return render_template("quoted.html", info=info)
+        else:
+            return apology("Symbol not found")
+    else:
+        return render_template("quote.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-    return apology("TODO")
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirmation = request.form.get("confirmation")
+
+        if not username:
+            return apology("Username is empty")
+        if not password:
+            return apology("Provide password")
+        if not confirmation:
+            return apology("Confirm password")
+
+        if password != confirmation:
+            return apology("Password not confirmed")
+
+        users = db.execute("SELECT id, username FROM users WHERE username = ?;", username)
+        if users:
+            return apology(f"Username {username} already exists")
+
+        hash = generate_password_hash(password)
+
+        db.execute("INSERT INTO users (username, hash) VALUES (?, ?);", username, hash)
+
+        return redirect("/login")
+    else:
+        return render_template("register.html")
 
 
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+    user_id = session["user_id"]
+    symbols = db.execute("SELECT DISTINCT symbol FROM transactions WHERE (user_id) = (?);", user_id)
+    if request.method == "POST":
+        symbol = request.form.get("symbol")
+        if not symbol:
+            return apology("No symbol provided to sell")
+        s = list(map(lambda x: x.get("symbol"), symbols))
+        if symbol not in s:
+            return apology("No such symbol in your portfolio")
+        try:
+            shares = float(request.form.get("shares"))
+        except:
+            return apology("Shares is not a number")
+        if int(shares) != shares or shares < 1:
+            return apology("You can sell only positive integer amount of shares")
+        existing_shares = db.execute(
+            "SELECT SUM(shares) as shares FROM transactions WHERE (user_id, symbol) = (?, ?) GROUP BY symbol;", user_id, symbol)[0].get("shares")
+        if shares > existing_shares:
+            return apology("Not enough shares in portfolio")
+
+        price = lookup(symbol).get("price")
+        total = shares * price
+        shares_to_sell = (-1) * shares
+        db.execute("CREATE TABLE IF NOT EXISTS transactions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, user_id INTEGER NOT NULL, symbol TEXT NOT NULL, shares INTEGER NOT NULL, price NUMERIC NOT NULL, timestamp TEXT DEFAULT CURRENT_TIMESTAMP);")
+        db.execute("INSERT INTO transactions (user_id, symbol, shares, price) VALUES (?, ?, ?, ?);",
+                   user_id, symbol, shares_to_sell, price)
+        cash = db.execute("SELECT cash FROM users WHERE id = ?;", user_id)[0].get("cash")
+        db.execute("UPDATE users SET cash = ? WHERE id = ?;", cash + total, user_id)
+
+        return redirect("/")
+    else:
+        return render_template("sell.html", symbols=symbols)

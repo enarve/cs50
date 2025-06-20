@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    History
+{% endblock %}
+
+{% block main %}
+    <table class="table">
+        <tr><th>Timestamp</th><th>Operation</th><th>Symbol</th><th>Shares</th><th>Price</th></tr>
+        {% for trn in transactions %}
+            <tr>
+                <td>{{trn.timestamp}}</td>
+                <td class="operation">{{trn.operation}}</td>
+                <td>{{trn.symbol}}</td>
+                <td>{{trn.shares}}</td>
+                <td>{{trn.price | usd}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <script src="static/history.js"></script>
+{% endblock %}
